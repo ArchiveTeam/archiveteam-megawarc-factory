@@ -1,0 +1,17 @@
+#!/bin/bash
+# This loops the pack-one-without-upload script while the RUN file exists.
+# See pack-one-without-upload for details.
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while [[ -f RUN ]]
+do
+  $SCRIPT_DIR/pack-one-without-upload $1 $2 $3
+  result=$?
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "packer exited with $result"
+    exit $result
+  fi
+done
+

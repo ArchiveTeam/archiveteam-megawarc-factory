@@ -1,0 +1,17 @@
+#!/bin/bash
+# This loops the upload-one script while the RUN file exists.
+# See upload-one for details.
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while [[ -f RUN ]]
+do
+  $SCRIPT_DIR/upload-one $1
+  result=$?
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "uploader exited with $result"
+    exit $result
+  fi
+done
+

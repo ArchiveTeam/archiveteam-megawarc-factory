@@ -1,0 +1,121 @@
+#!/bin/bash
+# Feeds the upload queue with megawarcs.
+#
+#   ./pack-one PROCESSED_DIR TARGET_DIR UPLOAD_QUEUE_DIR
+#
+# 1. Grabs an item from PROCESSED_DIR
+# 2. Reserves the item by moving the directory to the working directory
+# 3. Makes a megawarc in the TARGET_DIR
+# 4. Removes the source files from the working directory
+# 5. Moves the megawarc to UPLOAD_QUEUE_DIR
+#
+# The program exits with 1 on any nontransient error.
+#
+# run from the packer directory /archiveteam/packer-1/
+# 
+#   ./pack-one /archiveteam/processed/archive /archiveteam/ssd1/packer-1 /archiveteam/ssd1/upload-queue
+#
+
+PROCESSED_DIR=$1
+TARGET_DIR=$2
+UPLOAD_QUEUE_DIR=$3
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MEGAWARC=$SCRIPT_DIR/megawarc/megawarc
+
+if [ ! -f ./config.sh ] ; then
+  echo "config.sh not found in current directory."
+  exit 1
+fi
+source ./config.sh
+
+
+function mayicontinue {
+  echo
+# echo "May I continue?"
+# read
+# echo
+}
+
+mkdir -p $TARGET_DIR
+mkdir -p $UPLOAD_QUEUE_DIR
+
+
+# check if the upload queue is empty
+# if [ "$( ls -A $UPLOAD_QUEUE_DIR )" ]
+# then
+#   echo "Upload queue not empty. Wait."
+#   sleep 30
+#   exit 0
+# fi
+
+
+mayicontinue
+
+
+# try to grab a directory from /archiveteam/processed/archive/
+ITEM=none
+while [[ $ITEM = none ]]
+do
+  possible_item=$( ls -1 $PROCESSED_DIR/ | grep 201 | sort | head -n 1 )
+  if [[ $possible_item =~ 201 ]]
+  then
+    echo "Trying to grab $possible_item"
+    if mv $PROCESSED_DIR/$possible_item .
+    then
+      ITEM=$possible_item
+    else
+      echo "Failed to move $possible_item"
+      sleep 5
+    fi
+  else
+    date
+    echo "No current item found!"
+    sleep 30
+    exit 0
+  fi
+done
+
+
+mayicontinue
+
+
+echo "$( date ): Starting megawarc for item $ITEM" >> packer.log
+
+# construct a megawarc
+mkdir -p $TARGET_DIR/$ITEM
+$MEGAWARC --verbose pack $TARGET_DIR/$ITEM/${FILE_PREFIX}${ITEM} $ITEM
+result=$?
+
+if [[ $result -ne 0 ]]
+then
+  date
+  echo "megawarc exited with $result for $ITEM"
+  exit 1
+fi
+
+echo "$( date ): Completed megawarc for item $ITEM" >> packer.log
+
+
+mayicontinue
+
+
+# remove files
+echo "megawarc OK, removing source files"
+rm -rf $ITEM
+result=$?
+
+if [[ $result -ne 0 ]]
+then
+  date
+  echo "rm -rf source files exited with $result for $ITEM"
+  exit 1
+fi
+
+
+echo "add to upload queue"
+mv $TARGET_DIR/$ITEM $UPLOAD_QUEUE_DIR
+
+
+exit 0
+
