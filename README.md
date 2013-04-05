@@ -1,6 +1,6 @@
 Archive Team megawarc factory
 =============================
-Some scripts to process ArchiveTeam uploads. Use at your own risk; the scripts will need per-project adjustment.
+Some scripts to bundle Archive Team uploads and upload them to Archive.org. Use at your own risk; the scripts will need per-project adjustment.
 
 These scripts make batches of uploaded warc.gz files, combine them into megawarcs and upload them to their permanent home on Archive.org.
 
