@@ -27,7 +27,7 @@ If necessary, multiple uploaders can work the same queue.
 
 Filesystems
 -----------
-From the chunker to the uploader, the chunks move through the system as timestamped directories, e.g., 20130401213900.) This timestamp will also be used in the name of the uploaded item on Archive.org. The queues are directories. Processes `claim' a chunk by moving it from the queue directory to their working directory. This assumes that `mv` is an atomic operation.
+From the chunker to the uploader, the chunks move through the system as timestamped directories, e.g., 20130401213900.) This timestamp will also be used in the name of the uploaded item on Archive.org. The queues are directories. Processes 'claim' a chunk by moving it from the queue directory to their working directory. This assumes that `mv` is an atomic operation.
 
 For efficiency and to maintain the atomicity of `mv`, the filesystem of the directories is very important:
 
@@ -46,5 +46,5 @@ Requirements
 ------------
 These scripts use Bash and Curl.
 
-You should clone https://github.com/alard/megawarc to the megawarc/ subdirectory of these scripts. The megawarc utility requires Python and Gzip.
+You should clone https://github.com/alard/megawarc to the `megawarc/` subdirectory of these scripts. The megawarc utility requires Python and Gzip.
 
