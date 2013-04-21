@@ -1,16 +1,16 @@
 #!/bin/bash
-# This loops the upload-one script while the RUN file exists.
-# See upload-one for details.
+# This loops the chunker script while the RUN file exists.
+# See chunker for details.
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 while [[ -f RUN ]]
 do
-  $SCRIPT_DIR/upload-one
+  $SCRIPT_DIR/chunker
   result=$?
   if [[ $result -ne 0 ]]
   then
     date
-    echo "uploader exited with $result"
+    echo "chunker exited with $result"
     exit $result
   fi
 done

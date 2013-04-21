@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 while [[ -f RUN ]]
 do
-  $SCRIPT_DIR/pack-one-without-upload $1 $2 $3
+  $SCRIPT_DIR/pack-one-without-upload
   result=$?
   if [[ $result -ne 0 ]]
   then

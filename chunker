@@ -8,12 +8,22 @@
 # can be moved somewhere else. Remember this when running Rsync.
 #
 
-PATH_TO_UPLOADS=$1 # /home/archiveteam/uploads
-PATH_TO_TARGET=$2  # /home/archiveteam/processed
-MAX_MEGABYTES=$((1024*25))
+INCOMING_UPLOADS_DIR=$1 # /home/archiveteam/uploads
+CHUNKER_WORKING_DIR=$2  # /home/archiveteam/processed
+PACKING_QUEUE_DIR="$CHUNKER_WORKING_DIR/archive"
+MEGABYTES_PER_CHUNK=$((1024*25))
+
+# if not specified in command-line arguments
+if [ -z $INCOMING_UPLOADS_DIR ]
+then
+  source ./config.sh || exit 1
+fi
+
+mkdir -p "$CHUNKER_WORKING_DIR" || exit 1
+mkdir -p "$PACKING_QUEUE_DIR" || exit 1
 
 # find every .warc.gz in the upload directory
-find "$PATH_TO_UPLOADS" -type f -name "*.warc.gz" \
+find "$INCOMING_UPLOADS_DIR" -type f -name "*.warc.gz" \
 | while read filename
 do
   # skip partial uploads
@@ -24,18 +34,17 @@ do
 
   # move to the current/ directory
   echo "Moving ${filename}"
-  mkdir -p "${PATH_TO_TARGET}/current"
-  mv "${filename}" "${PATH_TO_TARGET}/current/"
+  mkdir -p "$CHUNKER_WORKING_DIR/current"
+  mv "${filename}" "$CHUNKER_WORKING_DIR/current/"
 
   # if the current/ directory is large enough,
   # rename it to archive-XXXXX and start a new current/
-  cur_size=$( du -BM -s "${PATH_TO_TARGET}/current" | grep -oE "^[0-9]+" )
-  if [[ $cur_size -gt $MAX_MEGABYTES ]]
+  cur_size=$( du -BM -s "$CHUNKER_WORKING_DIR/current" | grep -oE "^[0-9]+" )
+  if [[ $cur_size -gt $MEGABYTES_PER_CHUNK ]]
   then
     timestamp=$( date +'%Y%m%d%H%M%S' )
     echo "Current archive is full, moving to ${timestamp}."
-    mkdir -p "${PATH_TO_TARGET}/archive"
-    mv "${PATH_TO_TARGET}/current" "${PATH_TO_TARGET}/archive/${timestamp}"
+    mv "$CHUNKER_WORKING_DIR/current" "$PACKING_QUEUE_DIR/${timestamp}"
   fi
 done
 

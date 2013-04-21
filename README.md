@@ -39,7 +39,23 @@ Filesystems 1 and 2 do not have to be the same.
 
 Configuration
 -------------
-See each script for the configuration options and arguments. Part of the configuration is in the `config.sh` file that you should place in the working directory of each script. Another part of the configuration is in the script's arguments. The working directory itself is also important for some of the scripts.
+Create a configuration file called `config.sh` and place it in the directory where you start the scripts. See the `config.example.sh` for more details.
+
+
+Running
+-------
+In `screen`, `tmux` or something similar, run the scripts:
+
+`./chunk-many` (run exactly one)
+`./pack-many` (you may run more than one)
+`./upload-many` (you may run more than one)
+
+`touch RUN` before you start the scripts. Use `rm RUN` to stop gracefully.
+
+
+Recovering from errors
+----------------------
+The scripts are designed not to lose data. If a script dies, you can look in its working directory for in-progress items and move them back to the queue.
 
 
 Requirements
