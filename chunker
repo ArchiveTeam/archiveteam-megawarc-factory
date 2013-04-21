@@ -13,7 +13,7 @@ PATH_TO_TARGET=$2  # /home/archiveteam/processed
 MAX_MEGABYTES=$((1024*25))
 
 # find every .warc.gz in the upload directory
-find $PATH_TO_UPLOADS -type f -name "*.warc.gz" \
+find "$PATH_TO_UPLOADS" -type f -name "*.warc.gz" \
 | while read filename
 do
   # skip partial uploads
@@ -24,21 +24,18 @@ do
 
   # move to the current/ directory
   echo "Moving ${filename}"
-  mkdir -p ${PATH_TO_TARGET}/current
-  mv ${filename} ${PATH_TO_TARGET}/current/
+  mkdir -p "${PATH_TO_TARGET}/current"
+  mv "${filename}" "${PATH_TO_TARGET}/current/"
 
   # if the current/ directory is large enough,
   # rename it to archive-XXXXX and start a new current/
-  cur_size=$( du -BM -s ${PATH_TO_TARGET}/current | grep -oE "^[0-9]+" )
+  cur_size=$( du -BM -s "${PATH_TO_TARGET}/current" | grep -oE "^[0-9]+" )
   if [[ $cur_size -gt $MAX_MEGABYTES ]]
   then
     timestamp=$( date +'%Y%m%d%H%M%S' )
     echo "Current archive is full, moving to ${timestamp}."
-    mkdir -p ${PATH_TO_TARGET}/archive
-    mv ${PATH_TO_TARGET}/current ${PATH_TO_TARGET}/archive/${timestamp}
-    
-    # perhaps do something to the ${PATH_TO_TARGET}/archive/${timestamp}
-    # e.g.   ./make-tar-and-upload.sh ${timestamp}
+    mkdir -p "${PATH_TO_TARGET}/archive"
+    mv "${PATH_TO_TARGET}/current" "${PATH_TO_TARGET}/archive/${timestamp}"
   fi
 done
 
