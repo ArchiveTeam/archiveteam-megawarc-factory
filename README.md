@@ -44,13 +44,11 @@ Create a configuration file called `config.sh` and place it in the directory whe
 
 Running
 -------
-In `screen`, `tmux` or something similar, run the scripts:
+Run the scripts in `screen`, `tmux` or something similar. `touch RUN` before you start the scripts. Use `rm RUN` to stop gracefully.
 
 `./chunk-multiple` (run exactly one)
 `./pack-multiple` (you may run more than one)
 `./upload-multiple` (you may run more than one)
-
-`touch RUN` before you start the scripts. Use `rm RUN` to stop gracefully.
 
 
 Recovering from errors
