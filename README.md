@@ -46,9 +46,9 @@ Running
 -------
 In `screen`, `tmux` or something similar, run the scripts:
 
-`./chunk-many` (run exactly one)
-`./pack-many` (you may run more than one)
-`./upload-many` (you may run more than one)
+`./chunk-multiple` (run exactly one)
+`./pack-multiple` (you may run more than one)
+`./upload-multiple` (you may run more than one)
 
 `touch RUN` before you start the scripts. Use `rm RUN` to stop gracefully.
 
