@@ -53,7 +53,7 @@ Run the scripts in `screen`, `tmux` or something similar. `touch RUN` before you
 
 Scheduling priorities
 ---------------------
-The packing script will use all your I/O capacity. Consider using `nice` and `ionice` to influence have it run in at a lower priority, so it doesn't hinder your incoming Rsync or outgoing curl uploads.
+The packing script will use all your I/O capacity. Consider using `nice` and `ionice` to run in at a lower priority, so it doesn't hinder your incoming Rsync or outgoing curl uploads.
 
 * `ionice -c 2 -n 6 nice -n 19 ./pack-multiple`
 
