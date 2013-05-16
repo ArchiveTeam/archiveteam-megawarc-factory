@@ -50,6 +50,10 @@ Run the scripts in `screen`, `tmux` or something similar. `touch RUN` before you
 * `./pack-multiple` (you may run more than one)
 * `./upload-multiple` (you may run more than one)
 
+Utility scripts:
+
+* `./du-all` will run `du -hs` in all queues
+
 
 Scheduling priorities
 ---------------------

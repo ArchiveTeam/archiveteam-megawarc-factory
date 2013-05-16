@@ -1,0 +1,14 @@
+#!/bin/bash
+# This shows du -hs for the important directories.
+source ./config.sh || exit 1
+
+du -hs \
+  $INCOMING_UPLOADS_DIR \
+  $CHUNKER_WORKING_DIR \
+  $PACKING_QUEUE_DIR/* \
+  $PACKER_WORKING_CHUNKS_DIR/* \
+  $PACKER_WORKING_MEGAWARC_DIR/* \
+  $UPLOAD_QUEUE_DIR/* \
+  $UPLOADER_WORKING_DIR/* \
+2> >(grep -v 'du: cannot \(access\|read\)' >&2)
+
