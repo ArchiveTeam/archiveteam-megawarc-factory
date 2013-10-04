@@ -71,5 +71,5 @@ Requirements
 ------------
 These scripts use Bash and Curl.
 
-You should clone https://github.com/ArchiveTeam/megawarc to the `megawarc/` subdirectory of these scripts. The megawarc utility requires Python and Gzip.
+You should clone https://github.com/alard/megawarc to the `megawarc/` subdirectory of these scripts. The megawarc utility requires Python and Gzip.
 
