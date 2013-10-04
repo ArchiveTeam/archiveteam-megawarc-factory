@@ -76,7 +76,7 @@ do
       --header "x-archive-queue-derive:1" \
       --header "x-amz-auto-make-bucket:1" \
       --header "x-archive-meta-collection:${IA_COLLECTION}" \
-      --header "x-archive-meta-mediatype:web" \
+      --header "x-archive-meta-mediatype:texts" \
       --header "x-archive-meta-title:${IA_ITEM_TITLE} ${ITEM}" \
       --header "x-archive-meta-date:${IA_ITEM_DATE}" \
       --header "x-archive-meta-language:eng" \
