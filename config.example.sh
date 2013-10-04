@@ -6,7 +6,7 @@
 # CHUNKER SETTINGS #
 ####################
 # start a new chunk when the current chunk is at least this large
-MEGABYTES_PER_CHUNK=$((1024*25))
+MEGABYTES_PER_CHUNK=$((1024*20))
 
 ###################
 # UPLOAD METADATA #
@@ -15,16 +15,16 @@ MEGABYTES_PER_CHUNK=$((1024*25))
 IA_AUTH="ACCESS_KEY:SECRET"
 
 # the name of the collection to add the uploads to
-IA_COLLECTION="archiveteam_TODO"
+IA_COLLECTION="opensource"
 
 # the title of the items (" ${item_timestamp}" will be appended)
-IA_ITEM_TITLE="Archive Team TODO:"
+IA_ITEM_TITLE="Archive Team Zapd:"
 
 # the prefix of the item name ("${item_timestamp}" is appended)
-IA_ITEM_PREFIX="archiveteam_todo_"
+IA_ITEM_PREFIX="archiveteam_zapd_"
 
 # the prefix of the megawarc filename ("${item_timestamp}" is appended)
-FILE_PREFIX="todo_"
+FILE_PREFIX="zapd_"
 
 # the date field for the item
 IA_ITEM_DATE=$( date +"%Y-%m" )
@@ -35,8 +35,8 @@ IA_ITEM_DATE=$( date +"%Y-%m" )
 # DIRECTORIES #
 ###############
 # Put your directories on one or two filesystems (see README).
-FS1_BASE_DIR="/archiveteam/ssd/project"
-FS2_BASE_DIR="/archiveteam/disk/project"
+FS1_BASE_DIR="/root"
+FS2_BASE_DIR="/root"
 
 ## THESE DIRECTORIES ON FILESYSTEM 1: for warcs
 
