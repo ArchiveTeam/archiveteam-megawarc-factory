@@ -1,0 +1,3 @@
+[submodule "megawarc"]
+	path = megawarc
+	url = https://github.com/ArchiveTeam/megawarc.git
