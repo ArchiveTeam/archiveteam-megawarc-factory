@@ -83,7 +83,7 @@ do
       --header "x-archive-size-hint:$size_hint" \
       --header "authorization: LOW ${IA_AUTH}" \
       --upload-file "${UPLOADER_WORKING_DIR}/${ITEM}/${filename}" \
-      "http://s3.us.archive.org/${IA_ITEM_PREFIX}${ITEM}/${filename}" \
+      "https://s3.us.archive.org/${IA_ITEM_PREFIX}${ITEM}/${filename}" \
       > /dev/null
     result=$?
     if [[ $result -ne 0 ]]
