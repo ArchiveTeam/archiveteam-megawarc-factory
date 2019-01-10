@@ -52,6 +52,7 @@ do
     echo "Current archive is full, moving to ${timestamp}."
     mv "$CHUNKER_WORKING_DIR/current" "$PACKING_QUEUE_DIR/${timestamp}"
     cur_size=0
+    sleep 3
   fi
 done
 
