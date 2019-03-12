@@ -40,8 +40,8 @@ mayicontinue
 ITEM=none
 while [[ $ITEM = none ]]
 do
-  possible_item=$( ls -1 "$UPLOAD_QUEUE_DIR" | grep 201 | sort | head -n 1 )
-  if [[ $possible_item =~ 201 ]]
+  possible_item=$( ls -1 "$UPLOAD_QUEUE_DIR" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
+  if test -n "${possible_item}"
   then
     echo "Trying to grab $possible_item"
     if mv "$UPLOAD_QUEUE_DIR/$possible_item" "$UPLOADER_WORKING_DIR/"
