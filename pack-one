@@ -55,8 +55,8 @@ mayicontinue
 ITEM=none
 while [[ $ITEM = none ]]
 do
-  possible_item=$( ls -1 "$PACKING_QUEUE_DIR/" | grep 201 | sort | head -n 1 )
-  if [[ $possible_item =~ 201 ]]
+  possible_item=$( ls -1 "$PACKING_QUEUE_DIR/" | grep -E '_[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$' | sort | head -n 1 )
+  if test -n "${possible_item}"
   then
     echo "Trying to grab $possible_item"
     if mv "$PACKING_QUEUE_DIR/$possible_item" "$PACKER_WORKING_CHUNKS_DIR/"
