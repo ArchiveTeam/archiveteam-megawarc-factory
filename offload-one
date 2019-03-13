@@ -1,0 +1,115 @@
+#!/bin/bash
+# Offloads megawarcs from the upload queue.
+# (Needs a config.sh in the working directory.)
+#
+#   ./offload-one
+#
+# 1. Grabs an item from UPLOAD_QUEUE_DIR
+# 2. Reserves the item by moving the directory to the
+#    UPLOADER_WORKING_DIR
+# 3. Offloads the item to the target defined in OFFLOAD_TARGET
+# 4. Removes the source files from the working directory
+#    If COMPLETED_DIR is set, offloaded files are moved there.
+#
+# The program exits with 1 on any nontransient error.
+#
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source ./config.sh || exit 1
+
+mkdir -p "$UPLOAD_QUEUE_DIR" || exit 1
+mkdir -p "$UPLOADER_WORKING_DIR" || exit 1
+
+if [ ! -z "$COMPLETED_DIR" ]
+then
+  mkdir -p "$COMPLETED_DIR" || exit 1
+fi
+
+function mayicontinue {
+  echo
+# echo "May I continue?"
+# read
+# echo
+}
+
+mayicontinue
+
+
+# try to grab an item from UPLOAD_QUEUE_DIR
+ITEM=none
+while [[ $ITEM = none ]]
+do
+  possible_item=$( ls -1 "$UPLOAD_QUEUE_DIR" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
+  if test -n "${possible_item}"
+  then
+    echo "Trying to grab $possible_item"
+    if mv "$UPLOAD_QUEUE_DIR/$possible_item" "$UPLOADER_WORKING_DIR/"
+    then
+      ITEM=$possible_item
+    else
+      echo "Failed to move $possible_item"
+      sleep 5
+    fi
+  else
+    date
+    echo "No current item found!"
+    sleep 30
+    exit 0
+  fi
+done
+
+
+echo "$( date ): Start offloading for item $ITEM" >> uploader.log
+
+result=1
+while [[ $result -ne 0 ]]
+do
+  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --min-size 1 --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${OFFLOAD_TARGET}/${ITEM}/"
+  result=$?
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "Error while offloading $ITEM, rsync said $result"
+    echo "Will retry in 30 seconds"
+    sleep 30
+  fi
+done
+
+echo "Offloaded $ITEM"
+
+echo "$( date ): Completed offloading for item $ITEM" >> uploader.log
+
+
+exit 0
+mayicontinue
+
+
+# move or remove megawarc
+if [ -z "$COMPLETED_DIR" ]
+then
+  # remove
+  rm -rf "${UPLOADER_WORKING_DIR}/${ITEM}"
+  result=$?
+
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "rm -rf megawarc exited with $result for $ITEM"
+    exit 1
+  fi
+else
+  # move
+  mv "${UPLOADER_WORKING_DIR}/${ITEM}" "${COMPLETED_DIR}/"
+  result=$?
+
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "rm -rf megawarc exited with $result for $ITEM"
+    exit 1
+  fi
+fi
+
+exit 0
+
