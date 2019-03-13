@@ -81,7 +81,6 @@ echo "Offloaded $ITEM"
 echo "$( date ): Completed offloading for item $ITEM" >> uploader.log
 
 
-exit 0
 mayicontinue
 
 
