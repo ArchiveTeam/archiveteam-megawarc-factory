@@ -1,0 +1,17 @@
+#!/bin/bash
+# This loops the offload-one script while the RUN file exists.
+# See offload-one for details.
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+while [[ -f RUN ]]
+do
+  $SCRIPT_DIR/offload-one
+  result=$?
+  if [[ $result -ne 0 ]]
+  then
+    date
+    echo "offloader exited with $result"
+    exit $result
+  fi
+done
+

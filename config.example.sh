@@ -29,7 +29,8 @@ FILE_PREFIX="todo_"
 # the date field for the item
 IA_ITEM_DATE=$( date +"%Y-%m" )
 
-
+# offload items to another rsync storage instead of uploading to IA
+OFFLOAD_TARGET="rsync://somewhere-far-away:portnum/module-name/directory/"
 
 ###############
 # DIRECTORIES #
