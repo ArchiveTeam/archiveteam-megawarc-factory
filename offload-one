@@ -8,6 +8,7 @@
 # 2. Reserves the item by moving the directory to the
 #    UPLOADER_WORKING_DIR
 # 3. Offloads the item to the target defined in OFFLOAD_TARGET
+#    or in the offload_targets file
 # 4. Removes the source files from the working directory
 #    If COMPLETED_DIR is set, offloaded files are moved there.
 #
@@ -35,6 +36,11 @@ function mayicontinue {
 
 mayicontinue
 
+if test -z "${OFFLOAD_TARGET}" && ! cat ./offload_targets 2> /dev/null | grep -E '^rsync://[^/]+/[^/]+'; then
+  echo "No valid offload target specified in OFFLOAD_TARGET environment variable or ./offload_targets file, aborting offload"
+  sleep 30
+  exit 1
+fi
 
 # try to grab an item from UPLOAD_QUEUE_DIR
 ITEM=none
@@ -65,7 +71,18 @@ echo "$( date ): Start offloading for item $ITEM" >> uploader.log
 result=1
 while [[ $result -ne 0 ]]
 do
-  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${OFFLOAD_TARGET}/${ITEM}/"
+  _OFFLOAD_TARGET="${OFFLOAD_TARGET}"
+  if test -z "${_OFFLOAD_TARGET}"; then
+    _OFFLOAD_TARGET=$(cat "./offload_targets" 2> /dev/null | grep -E '^rsync://[^/]+/[^/]+' | shuf -n 1)
+  fi
+  if test -z "${_OFFLOAD_TARGET}"; then
+    echo "No valid offload target specified in OFFLOAD_TARGET environment variable or ./offload_targets file"
+    echo "Will retry in 30 seconds"
+    sleep 30
+    continue
+  fi
+  echo "Offloading to ${_OFFLOAD_TARGET}/${ITEM}/"
+  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${_OFFLOAD_TARGET}/${ITEM}/"
   result=$?
   if [[ $result -ne 0 ]]
   then
