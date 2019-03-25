@@ -65,7 +65,7 @@ echo "$( date ): Start offloading for item $ITEM" >> uploader.log
 result=1
 while [[ $result -ne 0 ]]
 do
-  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --min-size 1 --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${OFFLOAD_TARGET}/${ITEM}/"
+  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${OFFLOAD_TARGET}/${ITEM}/"
   result=$?
   if [[ $result -ne 0 ]]
   then
