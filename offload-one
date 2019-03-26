@@ -36,7 +36,7 @@ function mayicontinue {
 
 mayicontinue
 
-if test -z "${OFFLOAD_TARGET}" && ! cat ./offload_targets 2> /dev/null | grep -E '^rsync://[^/]+/[^/]+'; then
+if test -z "${OFFLOAD_TARGET}" && ! cat ./offload_targets 2> /dev/null | grep -qE '^rsync://[^/]+/[^/]+'; then
   echo "No valid offload target specified in OFFLOAD_TARGET environment variable or ./offload_targets file, aborting offload"
   sleep 30
   exit 1
@@ -82,7 +82,7 @@ do
     continue
   fi
   echo "Offloading to ${_OFFLOAD_TARGET}/${ITEM}/"
-  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${_OFFLOAD_TARGET}/${ITEM}/"
+  rsync -r --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --delay-updates --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${_OFFLOAD_TARGET}/${ITEM}/"
   result=$?
   if [[ $result -ne 0 ]]
   then
