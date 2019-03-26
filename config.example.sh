@@ -31,6 +31,8 @@ IA_ITEM_DATE=$( date +"%Y-%m" )
 
 # offload items to another rsync storage instead of uploading to IA
 OFFLOAD_TARGET="rsync://somewhere-far-away:portnum/module-name/directory/"
+# it is also possible to create a list of targets and the offloader will pick one at random and retry others on failure
+# simply comment out the line above and put all rsync target urls separated by newline in a file called "offload_targets"
 
 ###############
 # DIRECTORIES #
