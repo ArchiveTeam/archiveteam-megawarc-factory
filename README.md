@@ -49,6 +49,7 @@ Run the scripts in `screen`, `tmux` or something similar. `touch RUN` before you
 * `./chunk-multiple` (run exactly one)
 * `./pack-multiple` (you may run more than one)
 * `./upload-multiple` (you may run more than one)
+* `./offload-multiple` (you may run more than one, can work in tandem with `upload-multiple`)
 
 Utility scripts:
 
