@@ -38,7 +38,6 @@ case "${1}" in
 			echo "Missing param: MEGABYTES_PER_CHUNK=${MEGABYTES_PER_CHUNK}"
 			exit 1
 		fi
-		# TODO: Implement moving data from current dir back into the incoming dir to recover from a previously failed chunker process
 		exec /factory/chunk-multiple
 	;;
 	pack|pack-one|packer|pack-multiple)
@@ -56,8 +55,8 @@ case "${1}" in
 		exec /factory/upload-multiple
 	;;
 	offload|offload-one|offload-multiple)
-		if test -z "${OFFLOAD_TARGET}"; then
-			echo "Missing param: OFFLOAD_TARGET=${OFFLOAD_TARGET}"
+		if test -z "${OFFLOAD_TARGET}" && ! test -f "${PWD}/offload_targets"; then
+			echo "Missing param: OFFLOAD_TARGET=${OFFLOAD_TARGET} and no ${PWD}/offload_targets existing"
 			exit 1
 		fi
 		exec /factory/offload-multiple
