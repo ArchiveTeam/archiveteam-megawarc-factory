@@ -82,7 +82,7 @@ do
       --header "x-archive-meta-title:${IA_ITEM_TITLE} ${ITEM}" \
       --header "x-archive-meta-date:${IA_ITEM_DATE}" \
       --header "x-archive-meta-language:eng" \
-      --header "x-archive-meta-notorrent:true" \
+      --header "x-archive-meta-noarchivetorrent:true" \
       --header "x-archive-size-hint:$size_hint" \
       --header "authorization: LOW ${IA_AUTH}" \
       --upload-file "${UPLOADER_WORKING_DIR}/${ITEM}/${filename}" \
