@@ -24,6 +24,12 @@ The uploader monitors the upload queue. When the packer brings a new megawarc, t
 
 If necessary, multiple uploaders can work the same queue.
 
+3a. The offloader
+---------------
+The offloader monitors the upload queue. Instead of uploading to Archive.org, the megawarc will be sent to another host via rsync. This is useful when Archive.org has issues. 
+
+This can be used at the same time as the uploader without issues.
+
 
 Filesystems
 -----------
