@@ -65,13 +65,13 @@ echo "$( date ): Start uploading for item $ITEM" >> uploader.log
 # upload megawarc
 size_hint=$( du --bytes -s "${UPLOADER_WORKING_DIR}/${ITEM}" | grep -oE "^[0-9]+" )
 # (upload the large files first to optimise S3 snowballing)
-for ext in warc.gz tar json.gz
+
+find "${UPLOADER_WORKING_DIR}/${ITEM}" -type f -regextype posix-egrep -regex ".+\.megawarc\.(warc\.(gz|zst)|tar|json\.gz)$" -printf "%f\n" \
+| while read filename
 do
-  test "${ext}" == "tar" && ! test -f "${FILE_PREFIX}${ITEM}.megawarc.${ext}" && continue # skip non-existing tar files
   result=1
   while [[ $result -ne 0 ]]
   do
-    filename="${FILE_PREFIX}${ITEM}.megawarc.${ext}"
     curl -v --location --fail \
       --speed-limit 1 --speed-time 900 \
       --header "x-archive-queue-derive:1" \

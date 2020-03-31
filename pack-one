@@ -84,7 +84,7 @@ echo "$( date ): Starting megawarc for item $ITEM" >> packer.log
 mkdir -p $PACKER_WORKING_MEGAWARC_DIR/$ITEM
 # megawarcs use relative paths
 cd "$PACKER_WORKING_CHUNKS_DIR/"
-$MEGAWARC --verbose pack $PACKER_WORKING_MEGAWARC_DIR/$ITEM/${FILE_PREFIX}${ITEM} $ITEM
+$MEGAWARC --verbose pack --server $ZST_DICTIONARY_API $PACKER_WORKING_MEGAWARC_DIR/$ITEM/${FILE_PREFIX}${ITEM} $ITEM
 result=$?
 cd "$WORKING_DIR"
 

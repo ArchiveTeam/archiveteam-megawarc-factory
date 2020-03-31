@@ -28,7 +28,7 @@ mkdir -p "$CHUNKER_WORKING_DIR/current" || exit 1
 cur_size=$( du -B1 -s "$CHUNKER_WORKING_DIR/current" | grep -oE "^[0-9]+" )
 
 # find every .warc.gz in the upload directory
-find "$INCOMING_UPLOADS_DIR" -type f -name "*.warc.gz" \
+find "$INCOMING_UPLOADS_DIR" -type f -regex ".+\.warc\.\(gz\|zst\)$" \
 | while read filename
 do
   # skip partial uploads
