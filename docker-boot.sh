@@ -20,6 +20,7 @@ IA_ITEM_PREFIX="${IA_ITEM_PREFIX}"
 FILE_PREFIX="${FILE_PREFIX}"
 IA_ITEM_DATE=${IA_ITEM_DATE_LIT}
 OFFLOAD_TARGET="${OFFLOAD_TARGET}"
+ZST_DICTIONARY_API="${ZST_DICTIONARY_API}"
 INCOMING_UPLOADS_DIR="/data/incoming"
 CHUNKER_WORKING_DIR="/data/chunker-work"
 PACKING_QUEUE_DIR="/data/packing-queue"
@@ -41,8 +42,8 @@ EOF
                 exec /factory/chunk-multiple
         ;;
         pack|pack-one|packer|pack-multiple)
-                if test -z "${FILE_PREFIX}"; then
-                        echo "Missing param: FILE_PREFIX=${FILE_PREFIX}"
+                if test -z "${FILE_PREFIX}" || test -z "${ZST_DICTIONARY_API}"; then
+                        echo "Missing param: FILE_PREFIX=${FILE_PREFIX} ZST_DICTIONARY_API=${ZST_DICTIONARY_API}"
                         exit 1
                 fi
                 exec /factory/pack-multiple
