@@ -5,13 +5,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 while [[ -f RUN ]]
 do
-  $SCRIPT_DIR/offload-one
-  result=$?
-  if [[ $result -ne 0 ]]
+  "${SCRIPT_DIR}/offload-one"
+  result="${?}"
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "offloader exited with $result"
-    exit $result
+    echo "offloader exited with ${result}"
+    exit "${result}"
   fi
 done
 
