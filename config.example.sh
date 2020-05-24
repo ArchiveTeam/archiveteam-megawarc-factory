@@ -35,7 +35,7 @@ OFFLOAD_TARGET="rsync://somewhere-far-away:portnum/module-name/directory/"
 # simply comment out the line above and put all rsync target urls separated by newline in a file called "offload_targets"
 
 # the API for requesting the ZSTD dictionaries
-ZST_DICTIONARY_API="API URL"
+ZST_DICTIONARY_API="API_URL"
 
 ###############
 # DIRECTORIES #
