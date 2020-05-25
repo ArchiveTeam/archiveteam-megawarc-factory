@@ -16,19 +16,19 @@
 
 WORKING_DIR="$( pwd )"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-MEGAWARC=$SCRIPT_DIR/megawarc/megawarc
+MEGAWARC="${SCRIPT_DIR}/megawarc/megawarc"
 
-if [[ ! -x $MEGAWARC ]]
+if [[ ! -x "${MEGAWARC}" ]]
 then
-  echo "$MEGAWARC does not exist or is not executable."
+  echo "${MEGAWARC} does not exist or is not executable."
   exit 1
 fi
 
 source ./config.sh || exit 1
 
-mkdir -p "$PACKER_WORKING_CHUNKS_DIR" || exit 1
-mkdir -p "$PACKER_WORKING_MEGAWARC_DIR" || exit 1
-mkdir -p "$UPLOAD_QUEUE_DIR" || exit 1
+mkdir -p "${PACKER_WORKING_CHUNKS_DIR}" || exit 1
+mkdir -p "${PACKER_WORKING_MEGAWARC_DIR}" || exit 1
+mkdir -p "${UPLOAD_QUEUE_DIR}" || exit 1
 
 
 function mayicontinue {
@@ -40,7 +40,7 @@ function mayicontinue {
 
 
 # check if the upload queue is empty
-# if [ "$( ls -A $UPLOAD_QUEUE_DIR )" ]
+# if [ "$( ls -A ${UPLOAD_QUEUE_DIR} )" ]
 # then
 #   echo "Upload queue not empty. Wait."
 #   sleep 30
@@ -53,17 +53,17 @@ mayicontinue
 
 # try to grab a directory from the packing queue
 ITEM=none
-while [[ $ITEM = none ]]
+while [[ "${ITEM}" = none ]]
 do
-  possible_item=$( ls -1 "$PACKING_QUEUE_DIR/" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
+  possible_item=$( ls -1 "${PACKING_QUEUE_DIR}/" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
   if test -n "${possible_item}"
   then
-    echo "Trying to grab $possible_item"
-    if mv "$PACKING_QUEUE_DIR/$possible_item" "$PACKER_WORKING_CHUNKS_DIR/"
+    echo "Trying to grab ${possible_item}"
+    if mv "${PACKING_QUEUE_DIR}/${possible_item}" "${PACKER_WORKING_CHUNKS_DIR}/"
     then
-      ITEM=$possible_item
+      ITEM="${possible_item}"
     else
-      echo "Failed to move $possible_item"
+      echo "Failed to move ${possible_item}"
       sleep 5
     fi
   else
@@ -78,24 +78,24 @@ done
 mayicontinue
 
 
-echo "$( date ): Starting megawarc for item $ITEM" >> packer.log
+echo "$( date ): Starting megawarc for item ${ITEM}" >> packer.log
 
 # construct a megawarc
-mkdir -p $PACKER_WORKING_MEGAWARC_DIR/$ITEM
+mkdir -p "${PACKER_WORKING_MEGAWARC_DIR}/${ITEM}"
 # megawarcs use relative paths
-cd "$PACKER_WORKING_CHUNKS_DIR/"
-$MEGAWARC --verbose pack --server $ZST_DICTIONARY_API $PACKER_WORKING_MEGAWARC_DIR/$ITEM/${FILE_PREFIX}${ITEM} $ITEM
-result=$?
-cd "$WORKING_DIR"
+cd "${PACKER_WORKING_CHUNKS_DIR}/"
+"${MEGAWARC}" --verbose pack --server "${ZST_DICTIONARY_API}" "${PACKER_WORKING_MEGAWARC_DIR}/${ITEM}/${FILE_PREFIX}${ITEM}" "${ITEM}"
+result="${?}"
+cd "${WORKING_DIR}"
 
-if [[ $result -ne 0 ]]
+if [[ "${result}" -ne 0 ]]
 then
   date
-  echo "megawarc exited with $result for $ITEM"
+  echo "megawarc exited with ${result} for ${ITEM}"
   exit 1
 fi
 
-echo "$( date ): Completed megawarc for item $ITEM" >> packer.log
+echo "$( date ): Completed megawarc for item ${ITEM}" >> packer.log
 
 
 mayicontinue
@@ -103,19 +103,19 @@ mayicontinue
 
 # remove files
 echo "megawarc OK, removing source files"
-rm -rf "$PACKER_WORKING_CHUNKS_DIR/$ITEM"
-result=$?
+rm -rf "${PACKER_WORKING_CHUNKS_DIR}/${ITEM}"
+result="${?}"
 
-if [[ $result -ne 0 ]]
+if [[ "${result}" -ne 0 ]]
 then
   date
-  echo "rm -rf source files exited with $result for $ITEM"
+  echo "rm -rf source files exited with ${result} for ${ITEM}"
   exit 1
 fi
 
 
 echo "add to upload queue"
-mv "$PACKER_WORKING_MEGAWARC_DIR/$ITEM" "$UPLOAD_QUEUE_DIR/"
+mv "${PACKER_WORKING_MEGAWARC_DIR}/${ITEM}" "${UPLOAD_QUEUE_DIR}/"
 
 
 exit 0

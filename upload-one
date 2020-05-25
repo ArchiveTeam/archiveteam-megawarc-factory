@@ -18,12 +18,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source ./config.sh || exit 1
 
-mkdir -p "$UPLOAD_QUEUE_DIR" || exit 1
-mkdir -p "$UPLOADER_WORKING_DIR" || exit 1
+mkdir -p "${UPLOAD_QUEUE_DIR}" || exit 1
+mkdir -p "${UPLOADER_WORKING_DIR}" || exit 1
 
-if [ ! -z "$COMPLETED_DIR" ]
+if [ ! -z "${COMPLETED_DIR}" ]
 then
-  mkdir -p "$COMPLETED_DIR" || exit 1
+  mkdir -p "${COMPLETED_DIR}" || exit 1
 fi
 
 function mayicontinue {
@@ -38,17 +38,17 @@ mayicontinue
 
 # try to grab an item from UPLOAD_QUEUE_DIR
 ITEM=none
-while [[ $ITEM = none ]]
+while [[ "${ITEM}" = none ]]
 do
-  possible_item=$( ls -1 "$UPLOAD_QUEUE_DIR" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
+  possible_item=$( ls -1 "${UPLOAD_QUEUE_DIR}" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
   if test -n "${possible_item}"
   then
-    echo "Trying to grab $possible_item"
-    if mv "$UPLOAD_QUEUE_DIR/$possible_item" "$UPLOADER_WORKING_DIR/"
+    echo "Trying to grab ${possible_item}"
+    if mv "${UPLOAD_QUEUE_DIR}/${possible_item}" "${UPLOADER_WORKING_DIR}/"
     then
-      ITEM=$possible_item
+      ITEM="${possible_item}"
     else
-      echo "Failed to move $possible_item"
+      echo "Failed to move ${possible_item}"
       sleep 5
     fi
   else
@@ -60,7 +60,7 @@ do
 done
 
 
-echo "$( date ): Start uploading for item $ITEM" >> uploader.log
+echo "$( date ): Start uploading for item ${ITEM}" >> uploader.log
 
 # upload megawarc
 size_hint=$( du --bytes -s "${UPLOADER_WORKING_DIR}/${ITEM}" | grep -oE "^[0-9]+" )
@@ -70,7 +70,7 @@ find "${UPLOADER_WORKING_DIR}/${ITEM}" -type f -regextype posix-egrep -regex ".+
 | while read filename
 do
   result=1
-  while [[ $result -ne 0 ]]
+  while [[ "${result}" -ne 0 ]]
   do
     curl -v --location --fail \
       --speed-limit 1 --speed-time 900 \
@@ -83,52 +83,52 @@ do
       --header "x-archive-meta-date:${IA_ITEM_DATE}" \
       --header "x-archive-meta-language:eng" \
       --header "x-archive-meta-noarchivetorrent:true" \
-      --header "x-archive-size-hint:$size_hint" \
+      --header "x-archive-size-hint:${size_hint}" \
       --header "authorization: LOW ${IA_AUTH}" \
       --upload-file "${UPLOADER_WORKING_DIR}/${ITEM}/${filename}" \
       "https://s3.us.archive.org/${IA_ITEM_PREFIX}${ITEM}/${filename}" \
       > /dev/null
-    result=$?
-    if [[ $result -ne 0 ]]
+    result="${?}"
+    if [[ "${result}" -ne 0 ]]
     then
       date
-      echo "Error while uploading $ITEM, curl said $result"
+      echo "Error while uploading ${ITEM}, curl said ${result}"
       echo "Will retry in 30 seconds"
       sleep 30
     fi
   done
 done
 
-echo "Uploaded $ITEM"
+echo "Uploaded ${ITEM}"
 
-echo "$( date ): Completed uploading for item $ITEM" >> uploader.log
+echo "$( date ): Completed uploading for item ${ITEM}" >> uploader.log
 
 
 mayicontinue
 
 
 # move or remove megawarc
-if [ -z "$COMPLETED_DIR" ]
+if [ -z "${COMPLETED_DIR}" ]
 then
   # remove
   rm -rf "${UPLOADER_WORKING_DIR}/${ITEM}"
-  result=$?
+  result="${?}"
 
-  if [[ $result -ne 0 ]]
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "rm -rf megawarc exited with $result for $ITEM"
+    echo "rm -rf megawarc exited with ${result} for ${ITEM}"
     exit 1
   fi
 else
   # move
   mv "${UPLOADER_WORKING_DIR}/${ITEM}" "${COMPLETED_DIR}/"
-  result=$?
+  result="${?}"
 
-  if [[ $result -ne 0 ]]
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "rm -rf megawarc exited with $result for $ITEM"
+    echo "rm -rf megawarc exited with ${result} for ${ITEM}"
     exit 1
   fi
 fi

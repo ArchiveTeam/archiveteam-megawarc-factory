@@ -19,12 +19,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source ./config.sh || exit 1
 
-mkdir -p "$UPLOAD_QUEUE_DIR" || exit 1
-mkdir -p "$UPLOADER_WORKING_DIR" || exit 1
+mkdir -p "${UPLOAD_QUEUE_DIR}" || exit 1
+mkdir -p "${UPLOADER_WORKING_DIR}" || exit 1
 
-if [ ! -z "$COMPLETED_DIR" ]
+if [ ! -z "${COMPLETED_DIR}" ]
 then
-  mkdir -p "$COMPLETED_DIR" || exit 1
+  mkdir -p "${COMPLETED_DIR}" || exit 1
 fi
 
 function mayicontinue {
@@ -44,17 +44,17 @@ fi
 
 # try to grab an item from UPLOAD_QUEUE_DIR
 ITEM=none
-while [[ $ITEM = none ]]
+while [[ "${ITEM}" = none ]]
 do
-  possible_item=$( ls -1 "$UPLOAD_QUEUE_DIR" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
+  possible_item=$( ls -1 "${UPLOAD_QUEUE_DIR}" | grep -E '[0-9]{14}_[a-f0-9]{8}$' | sort | head -n 1 )
   if test -n "${possible_item}"
   then
-    echo "Trying to grab $possible_item"
-    if mv "$UPLOAD_QUEUE_DIR/$possible_item" "$UPLOADER_WORKING_DIR/"
+    echo "Trying to grab ${possible_item}"
+    if mv "${UPLOAD_QUEUE_DIR}/${possible_item}" "${UPLOADER_WORKING_DIR}/"
     then
-      ITEM=$possible_item
+      ITEM="${possible_item}"
     else
-      echo "Failed to move $possible_item"
+      echo "Failed to move ${possible_item}"
       sleep 5
     fi
   else
@@ -66,10 +66,10 @@ do
 done
 
 
-echo "$( date ): Start offloading for item $ITEM" >> uploader.log
+echo "$( date ): Start offloading for item ${ITEM}" >> uploader.log
 
 result=1
-while [[ $result -ne 0 ]]
+while [[ "${result}" -ne 0 ]]
 do
   _OFFLOAD_TARGET="${OFFLOAD_TARGET}"
   if test -z "${_OFFLOAD_TARGET}"; then
@@ -83,46 +83,46 @@ do
   fi
   echo "Offloading to ${_OFFLOAD_TARGET}/${ITEM}/"
   rsync -rltv --timeout=900 --contimeout=60 --sockopts=SO_SNDBUF=8388608,SO_RCVBUF=8388608 --progress --stats --no-owner --no-group --partial --partial-dir .rsync-tmp --delay-updates --no-compress --compress-level 0 "${UPLOADER_WORKING_DIR}/${ITEM}/" "${_OFFLOAD_TARGET}/${ITEM}/"
-  result=$?
-  if [[ $result -ne 0 ]]
+  result="${?}"
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "Error while offloading $ITEM, rsync said $result"
+    echo "Error while offloading ${ITEM}, rsync said ${result}"
     echo "Will retry in 30 seconds"
     sleep 30
   fi
 done
 
-echo "Offloaded $ITEM"
+echo "Offloaded ${ITEM}"
 
-echo "$( date ): Completed offloading for item $ITEM" >> uploader.log
+echo "$( date ): Completed offloading for item ${ITEM}" >> uploader.log
 
 
 mayicontinue
 
 
 # move or remove megawarc
-if [ -z "$COMPLETED_DIR" ]
+if [ -z "${COMPLETED_DIR}" ]
 then
   # remove
   rm -rf "${UPLOADER_WORKING_DIR}/${ITEM}"
-  result=$?
+  result="${?}"
 
-  if [[ $result -ne 0 ]]
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "rm -rf megawarc exited with $result for $ITEM"
+    echo "rm -rf megawarc exited with ${result} for ${ITEM}"
     exit 1
   fi
 else
   # move
   mv "${UPLOADER_WORKING_DIR}/${ITEM}" "${COMPLETED_DIR}/"
-  result=$?
+  result="${?}"
 
-  if [[ $result -ne 0 ]]
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "rm -rf megawarc exited with $result for $ITEM"
+    echo "rm -rf megawarc exited with ${result} for ${ITEM}"
     exit 1
   fi
 fi

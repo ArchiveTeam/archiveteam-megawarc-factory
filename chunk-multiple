@@ -6,13 +6,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 while [[ -f RUN ]]
 do
   date
-  $SCRIPT_DIR/chunker
-  result=$?
-  if [[ $result -ne 0 ]]
+  "${SCRIPT_DIR}/chunker"
+  result="${?}"
+  if [[ "${result}" -ne 0 ]]
   then
     date
-    echo "chunker exited with $result"
-    exit $result
+    echo "chunker exited with ${result}"
+    exit "${result}"
   fi
 
   echo "Sleeping..."

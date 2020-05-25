@@ -8,50 +8,50 @@
 # can be moved somewhere else. Remember this when running Rsync.
 #
 
-INCOMING_UPLOADS_DIR=$1 # /home/archiveteam/uploads
-CHUNKER_WORKING_DIR=$2  # /home/archiveteam/processed
-PACKING_QUEUE_DIR="$CHUNKER_WORKING_DIR/archive"
+INCOMING_UPLOADS_DIR="${1}" # /home/archiveteam/uploads
+CHUNKER_WORKING_DIR="${2}"  # /home/archiveteam/processed
+PACKING_QUEUE_DIR="${CHUNKER_WORKING_DIR}/archive"
 MEGABYTES_PER_CHUNK=$((1024*25))
 
 # if not specified in command-line arguments
-if [ -z $INCOMING_UPLOADS_DIR ]
+if [ -z "${INCOMING_UPLOADS_DIR}" ]
 then
   source ./config.sh || exit 1
 fi
 
 BYTES_PER_CHUNK=$((1024*1024*MEGABYTES_PER_CHUNK))
 
-mkdir -p "$CHUNKER_WORKING_DIR" || exit 1
-mkdir -p "$PACKING_QUEUE_DIR" || exit 1
+mkdir -p "${CHUNKER_WORKING_DIR}" || exit 1
+mkdir -p "${PACKING_QUEUE_DIR}" || exit 1
 
-mkdir -p "$CHUNKER_WORKING_DIR/current" || exit 1
-cur_size=$( du -B1 -s "$CHUNKER_WORKING_DIR/current" | grep -oE "^[0-9]+" )
+mkdir -p "${CHUNKER_WORKING_DIR}/current" || exit 1
+cur_size=$( du -B1 -s "${CHUNKER_WORKING_DIR}/current" | grep -oE "^[0-9]+" )
 
 # find every .warc.gz in the upload directory
-find "$INCOMING_UPLOADS_DIR" -type f -regex ".+\.warc\.\(gz\|zst\)$" \
+find "${INCOMING_UPLOADS_DIR}" -type f -regex ".+\.warc\.\(gz\|zst\)$" \
 | while read filename
 do
   # skip partial uploads
-  if [[ $filename =~ rsync-tmp ]]
+  if [[ "${filename}" =~ rsync-tmp ]]
   then
     continue
   fi
 
-  cur_size=$((cur_size + $( du -B1 -s $filename | grep -oE "^[0-9]+" )))
+  cur_size=$((cur_size + $( du -B1 -s "${filename}" | grep -oE "^[0-9]+" )))
 
   # move to the current/ directory
   echo "Moving ${filename}"
-  mkdir -p "$CHUNKER_WORKING_DIR/current"
-  mv "${filename}" "$CHUNKER_WORKING_DIR/current/"
+  mkdir -p "${CHUNKER_WORKING_DIR}/current"
+  mv "${filename}" "${CHUNKER_WORKING_DIR}/current/"
 
   # if the current/ directory is large enough,
   # rename it to archive-XXXXX and start a new current/
-  if [[ $cur_size -gt $BYTES_PER_CHUNK ]]
+  if [[ "${cur_size}" -gt "${BYTES_PER_CHUNK}" ]]
   then
     timestamp=$( date +'%Y%m%d%H%M%S' )
     uuid=$(cat /proc/sys/kernel/random/uuid | cut -d- -f1)
     echo "Current archive is full, moving to ${timestamp}_${uuid}."
-    mv "$CHUNKER_WORKING_DIR/current" "$PACKING_QUEUE_DIR/${timestamp}_${uuid}"
+    mv "${CHUNKER_WORKING_DIR}/current" "${PACKING_QUEUE_DIR}/${timestamp}_${uuid}"
     cur_size=0
     sleep 3
   fi
