@@ -27,6 +27,16 @@ mkdir -p "${PACKING_QUEUE_DIR}" || exit 1
 mkdir -p "${CHUNKER_WORKING_DIR}/current" || exit 1
 cur_size=$( du -B1 -s "${CHUNKER_WORKING_DIR}/current" | grep -oE "^[0-9]+" )
 
+if [ -f "$CHUNKER_WORKING_DIR/FINISH" ]; then
+	echo "FINISH file detected, moving to packing-queue"
+	timestamp=$( date +'%Y%m%d%H%M%S' )
+    uuid=$(cat /proc/sys/kernel/random/uuid | cut -d- -f1)
+    echo "Current archive is full, moving to ${timestamp}_${uuid}."
+    mv "${CHUNKER_WORKING_DIR}/current" "${PACKING_QUEUE_DIR}/${timestamp}_${uuid}"
+    cur_size=0
+	rm $CHUNKER_WORKING_DIR/FINISH
+	exit 0
+fi 
 # find every .warc.gz in the upload directory
 find "${INCOMING_UPLOADS_DIR}" -type f -regex ".+\.warc\.\(gz\|zst\)$" \
 | while read filename
