@@ -67,7 +67,7 @@ size_hint=$( du --bytes -s "${UPLOADER_WORKING_DIR}/${ITEM}" | grep -oE "^[0-9]+
 # (upload the large files first to optimise S3 snowballing)
 
 find "${UPLOADER_WORKING_DIR}/${ITEM}" -type f -regextype posix-egrep -regex ".+\.megawarc\.(warc\.(gz|zst)|tar|json\.gz)$" -printf "%f\n" \
-| while read filename
+| while read -r filename
 do
   result=1
   while [[ "${result}" -ne 0 ]]
