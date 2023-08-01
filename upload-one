@@ -76,7 +76,6 @@ do
       --speed-limit 1 --speed-time 900 \
       --header "x-archive-queue-derive:1" \
       --header "x-amz-auto-make-bucket:1" \
-      --header "x-archive-keep-old-version:1" \
       --header "x-archive-meta-collection:${IA_COLLECTION}" \
       --header "x-archive-meta-mediatype:web" \
       --header "x-archive-meta-title:${IA_ITEM_TITLE} ${ITEM}" \
