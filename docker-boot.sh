@@ -7,7 +7,17 @@
         exit 1
 }
 
- mkdir -p /data/incoming /data/chunker-work /data/packing-queue /data/packer-work-in /data/packer-work-out /data/upload-queue /data/uploader-work
+if [ -d "/data2" ] 
+then
+    TARGET_FS="/data2/"
+	
+	mkdir -p /data2/packer-work-out /data2/upload-queue /data2/uploader-work
+else
+    TARGET_FS="/data/"
+	mkdir -p /data/packer-work-out 
+fi
+
+ mkdir -p /data/incoming /data/chunker-work /data/packing-queue /data/upload-queue /data/uploader-work
 
  IA_ITEM_DATE_LIT='$( date +"%Y-%m" )'
 cat > /factory/config.sh << EOF
@@ -26,8 +36,8 @@ INCOMING_UPLOADS_DIR="/data/incoming"
 CHUNKER_WORKING_DIR="/data/chunker-work"
 PACKING_QUEUE_DIR="/data/packing-queue"
 PACKER_WORKING_CHUNKS_DIR="/data/packer-work-in"
-PACKER_WORKING_MEGAWARC_DIR="/data/packer-work-out"
-UPLOAD_QUEUE_DIR="/data/upload-queue"
+PACKER_WORKING_MEGAWARC_DIR="${TARGET_FS}packer-work-out"
+UPLOAD_QUEUE_DIR="${TARGET_FS}upload-queue"
 UPLOADER_WORKING_DIR="/data/uploader-work"
 COMPLETED_DIR=""
 EOF
