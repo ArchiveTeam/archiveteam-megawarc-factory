@@ -16,3 +16,7 @@ steps:
     auto_tag: false
     tags:
     - latest
+    when:
+      branch:
+        - master
+
