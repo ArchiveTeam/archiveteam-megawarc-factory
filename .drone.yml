@@ -4,6 +4,9 @@ name: default
 steps:
 - name: docker
   image: plugins/docker
+  when:
+    branch:
+      - master
   settings:
     registry: atdr-writer.meo.ws
     username:
@@ -16,7 +19,4 @@ steps:
     auto_tag: false
     tags:
     - latest
-    when:
-      branch:
-        - master
 
