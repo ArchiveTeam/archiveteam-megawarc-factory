@@ -63,8 +63,13 @@ done
 echo "$( date ): Start uploading for item ${ITEM}" >> uploader.log
 
 # upload megawarc
+set -x
+RETRY_TIMEOUT=${RETRY_TIMEOUT:-30}
+if [ -z ${URL_BASE+x} ]; then
+    URL_BASE="https://${LOAD_BALANCER:-s3}.us.archive.org"
+fi
+
 size_hint=$( du --bytes -s "${UPLOADER_WORKING_DIR}/${ITEM}" | grep -oE "^[0-9]+" )
-# (upload the large files first to optimise S3 snowballing)
 
 find "${UPLOADER_WORKING_DIR}/${ITEM}" -type f -regextype posix-egrep -regex ".+\.megawarc\.(warc\.(gz|zst)|tar|json\.gz)$" -printf "%f\n" \
 | while read -r filename
@@ -72,12 +77,13 @@ do
   result=1
   while [[ "${result}" -ne 0 ]]
   do
-    curl -v --location --fail \
+    curl -v --location --fail $EXTRA_CURL_ARGS \
       --speed-limit 1 --speed-time 900 \
+      --http1.1 \
       --header "x-archive-queue-derive:1" \
       --header "x-amz-auto-make-bucket:1" \
       --header "x-archive-meta-collection:${IA_COLLECTION}" \
-      --header "x-archive-meta-mediatype:web" \
+      --header "x-archive-meta-mediatype:${IA_ITEM_MEDIATYPE:-web}" \
       --header "x-archive-meta-title:${IA_ITEM_TITLE} ${ITEM}" \
       --header "x-archive-meta-date:${IA_ITEM_DATE}" \
       --header "x-archive-meta-language:eng" \
@@ -85,15 +91,15 @@ do
       --header "x-archive-size-hint:${size_hint}" \
       --header "authorization: LOW ${IA_AUTH}" \
       --upload-file "${UPLOADER_WORKING_DIR}/${ITEM}/${filename}" \
-      "https://${LOAD_BALANCER:-s3}.us.archive.org/${IA_ITEM_PREFIX}${ITEM}/${filename}" \
+      "${URL_BASE}/${IA_ITEM_PREFIX}${ITEM}/${filename}" \
       > /dev/null
     result="${?}"
     if [[ "${result}" -ne 0 ]]
     then
       date
       echo "Error while uploading ${ITEM}, curl said ${result}"
-      echo "Will retry in 30 seconds"
-      sleep 30
+      echo "Will retry in ${RETRY_TIMEOUT} seconds"
+      sleep ${RETRY_TIMEOUT}
     fi
   done
 done

@@ -2,8 +2,15 @@
 kind: pipeline
 name: default
 steps:
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule update --init --recursive
 - name: docker
   image: plugins/docker
+  when:
+    branch:
+      - master
   settings:
     registry: atdr-writer.meo.ws
     username:
@@ -16,3 +23,4 @@ steps:
     auto_tag: false
     tags:
     - latest
+
